@@ -53,7 +53,7 @@ contract DataType {
     address payable public myAddress1 = 0x1234567890123456789012345678901234567890;
 
 //    3. 引用类型：由值类型组合而成，包括
-//      - 数组
+//      - 数组（字符串和bytes是特殊的数组，所以也是引用类型）
 //      - struct
 //      - map
 //    todo
