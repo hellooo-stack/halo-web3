@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.7;
 
+// solidity的变量及函数的可见性:
 //    状态变量可见性:
-//      - public:
-//      - internal:
-//      - private:
+//      - public: 对外部可见，会自动生成getter函数
+//      - internal: 仅当前合约或继承的合约内部可访问
+//      - private: 仅可在当前合约内部访问和修改
 //    函数可见性: 必须有如下几种修饰符的一种，否则报错，不像状态变量，可省略修饰符
-//      - external:
-//      - public:
-//      - internal:
-//      - private:
+//      - public: 对外可见，任何人都可以在合约内部或外部调用该变量或函数
+//      - internal: 表示函数仅能在当前合约和其继承合约内部被访问和修改
+//      - private: 仅能在当前合约内部被访问和修改，任何合约外的代码都无法直接访问或修改 private 变量或函数
+//      - external: 表示函数仅内在合约外部调用，而不能在合约内部调用
 
 contract StateTestParent {
     uint public publicState;
