@@ -41,7 +41,15 @@ contract VotingContract {
         hasVoted[msg.sender] = true;
     }
 
-    function getWinner(topic) public returns (string) {
-        
+    function getWinner(string memory topic) public view returns (string memory winner) {
+        require(block.timestamp >= deadline, "Voting has not ended yet");
+
+        uint highestVoteCount = 0;
+        for (uint i = 0; i < options.length; i++) {
+            if (votes[options[i]] > highestVoteCount) {
+                highestVoteCount = votes[options[i]];
+                winner = options[i];
+            }
+        }
     }
 }
