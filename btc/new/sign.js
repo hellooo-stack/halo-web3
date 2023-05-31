@@ -3,10 +3,26 @@ const bitcoinMessage = require('bitcoinjs-message');
 const tinysecp = require('tiny-secp256k1');
 const bitcoin = require("bitcoinjs-lib");
 
+let isTest = false;
+function switchToTestnet() {
+    isTest = true;
+}
+function switchToMainnet() {
+    isTest = false;
+}
+
+function network() {
+    if (isTest) {
+        return networks.testnet;
+    } else {
+        return networks.bitcoin;
+    }
+}
+
 function addressFromWIF(wif) {
     const ECPair = ECPairFactory(tinysecp);
 
-    const keyPair = ECPair.fromWIF(wif);
+    const keyPair = ECPair.fromWIF(wif, network());
     const {address} = bitcoin.payments.p2pkh({pubkey: keyPair.publicKey});
 
     return address;
@@ -15,7 +31,7 @@ function addressFromWIF(wif) {
 function signMessageFromWIF(wif, message) {
     const ECPair = ECPairFactory(tinysecp);
 
-    const keyPair = ECPair.fromWIF(wif);
+    const keyPair = ECPair.fromWIF(wif, network());
     const privateKey = keyPair.privateKey;
     const signature = bitcoinMessage.sign(message, privateKey, keyPair.compressed)
 
@@ -85,10 +101,27 @@ function testP2PKH() {
     console.log('isValid: ', isValid);
 }
 
+// 2. P2SH:
+function testP2SH() {
+
+}
+
+// 3. P2WPKH()
+function testP2WPKH_mainNet() {
+
+}
+
+function testP2WPKH_testNet() {
+    switchToTestnet();
+
+
+}
+
+
 testP2PKH();
-
-
-
+testP2SH();
+testP2WPKH_mainNet();
+testP2WPKH_testNet();
 
 
 
