@@ -11,10 +11,10 @@ function signFromWif(message, wif) {
     const messageBuffer = Buffer.from(message);
     console.log('message: ' + messageBuffer.toString('hex'));
     const messageHash = bitcoin.crypto.hash256(messageBuffer);
-    const signature = keyPair.sign(messageHash);
+    const signature = keyPair.sign(messageHash, true).toString('base64');
 
-    console.log(keyPair.privateKey.toString('hex'));
-    console.log(signature.toLocaleString());
+    console.log(keyPair.privateKey.toString('base64'));
+    console.log(signature);
 }
 
 signFromWif('hello world', 'cQYcfMtZmtMFnTbEyucoDqaM9uSv2R2z1SCg4aJqQTL8JsMU7RnL');
