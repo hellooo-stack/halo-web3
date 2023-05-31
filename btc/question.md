@@ -7,3 +7,14 @@
 7. 我有一个私钥，我要怎么根据这个私钥算出地址
 8. 得到签名的DER之后，如何转为base64，直接转？
 9. 非对称加密中，签名的recoveryId是什么：EcKey.java -> signMessage(...) -> findRecoveryId(...)
+
+
+
+
+
+1. https://github.com/bitcoinjs/bitcoinjs-lib/issues/1203
+L and K are compressed keys.
+
+5 is uncompressed, meaning higher fees.
+
+you can also get lower fees by using segwit.
