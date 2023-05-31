@@ -50,3 +50,12 @@ function fallbackVerification(message, address, signature) {
     }
     return isValid;
 }
+
+function verify(message, address, signature) {
+    let isValid = simpleVerification(message, address, signature);
+    if (!isValid) {
+        isValid = fallbackVerification(message, address, signature);
+    }
+
+    return isValid;
+}
