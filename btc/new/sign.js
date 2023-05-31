@@ -3,6 +3,15 @@ const bitcoinMessage = require('bitcoinjs-message');
 const tinysecp = require('tiny-secp256k1');
 const bitcoin = require("bitcoinjs-lib");
 
+function addressFromWIF(wif) {
+    const ECPair = ECPairFactory(tinysecp);
+
+    const keyPair = ECPair.fromWIF(wif);
+    const {address} = bitcoin.payments.p2pkh({pubkey: keyPair.publicKey});
+
+    return address;
+}
+
 function signMessageFromWIF(wif, message) {
     const ECPair = ECPairFactory(tinysecp);
 
@@ -32,8 +41,11 @@ function verify(message, address, signature) {
 function simpleVerification(message, address, signature) {
     let isValid = false;
     try {
-        isValid = bitcoinMessage.verify(message, address, signature);
+        // isValid = bitcoinMessage.verify(message, address, signature);
+        isValid = bitcoinMessage.verify(message, address, signature, null, true);
+        console.log('before v: ' + isValid)
     } catch (e) {
+        console.error(e);
     }
     return isValid;
 }
@@ -59,9 +71,36 @@ function fallbackVerification(message, address, signature) {
 
 // https://github.com/bitcoinjs/bitcoinjs-message
 // signMessageFromWIF('L4rK1yDtCWekvXuE6oXD9jCYfFNV2cWRpVuPLBcCU2z8TrisoyY1', 'This is an example of a signed message.');
-// verify('This is an example of a signed message.', '1F3sAm6ZtwLAUnj7d38pGFxtP3RVEvtsbV', 'H9L5yLFjti0QTHhPyFrZCT1V/MMnBtXKmoiKDZ78NDBjERki6ZTQZdSMCtkgoNmp17By9ItJr8o7ChX0XxY91nk=');
+// signMessageFromWIF('cQYcfMtZmtMFnTbEyucoDqaM9uSv2R2z1SCg4aJqQTL8JsMU7RnL', 'hello world~');
+// // verify('This is an example of a signed message.', '1F3sAm6ZtwLAUnj7d38pGFxtP3RVEvtsbV', 'H9L5yLFjti0QTHhPyFrZCT1V/MMnBtXKmoiKDZ78NDBjERki6ZTQZdSMCtkgoNmp17By9ItJr8o7ChX0XxY91nk=');
+//
+// verify('hello world~', 'tb1qj2yrg95zt4sjqgtj9tu44d64xqe4m79rm89ne3', 'IA8Da70ACrUSmQiZ4zLzu9HVOWwGZFiYXFM3DtgtuONvKSXxojcJMSzIPs5qidfiD8gO6qBUm4Yyg9P81weFPBc=');
 
-verify('hello world~', 'tb1qj2yrg95zt4sjqgtj9tu44d64xqe4m79rm89ne3', 'HL4McV4Xyd2bNs7m3wytVU5m0aqYeDDtVetBYC3FZ1t0fd+W9Gi6y9HG6e1WKVw5ANtM9ck/m1Acz0BpW1Y6gjg=');
 
 
-// 1. Legacy address: sign done, verify done.
+// 1. p2pkh:
+//   - address: 1341EtMhuQtcAUKruUomiacbu6WzYNHqxC
+//   - privateKey: KypVGiJzkHngK3aHg11Ra5A4p7FeKsg2dcCryqGxKzPhpwbCHdXx
+//   - generated from: https://www.bitaddress.org/
+// 1-1: test addressFromWIF
+const address = addressFromWIF('KypVGiJzkHngK3aHg11Ra5A4p7FeKsg2dcCryqGxKzPhpwbCHdXx');
+console.log('is parsing address equals address: ', address === '1341EtMhuQtcAUKruUomiacbu6WzYNHqxC');
+
+
+
+
+// signMessageFromWIF('KypVGiJzkHngK3aHg11Ra5A4p7FeKsg2dcCryqGxKzPhpwbCHdXx', 'hello world');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
