@@ -18,3 +18,7 @@ L and K are compressed keys.
 5 is uncompressed, meaning higher fees.
 
 you can also get lower fees by using segwit.
+
+2. https://www.panewslab.com/zh/articledetails/z44s6lln.html
+3. https://www.btcstudy.org/2022/06/13/part-2-bitcoin-p2tr-transaction-breakdown/
+

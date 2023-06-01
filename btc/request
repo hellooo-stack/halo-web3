@@ -1,0 +1,11 @@
+curl https://aged-spring-sea.btc.quiknode.pro/ \
+  -X POST \
+  -H "Content-Type: application/json" \
+  --data '{"method": "verifymessage", "params": ["1341EtMhuQtcAUKruUomiacbu6WzYNHqxC", "H4TwYGY4ZGvL7uq+kaiWm4q69a6WxeIlJHAA9LoOQ8mXci0Zn1Gd5yAkL/s+2M1UF70oF+2qnudH3D5HFKC3gmI=", "hello world"]}'
+
+
+
+curl https://aged-spring-sea.btc.quiknode.pro/ \
+  -X POST \
+  -H "Content-Type: application/json" \
+  --data '{"method": "verifymessage", "params": ["bc1p8y2vtya493kyuzpewgv0qt429t3z7y3gfcmc3eau0ymsh523zzzswz7vyg", "HGptwBjA2cnFlnV0uvaBDYD1cj3fIqnA4ZsH54CIGw11ULcxG1Pgn3dgH58in1ThtOBOwF8nkjLbL/TEC73WeQM=", "hello world~"]}'

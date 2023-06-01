@@ -185,10 +185,10 @@ function testP2WPKH_testnet() {
 }
 
 
-// testP2PKH();
+testP2PKH();
 // testP2SH();
 // testP2WPKH_mainnet();
-testP2WPKH_testnet();
+// testP2WPKH_testnet();
 
 
 
