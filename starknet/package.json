@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "micro-starknet": "^0.2.3",
+    "starknet": "^4.22.0"
+  }
+}
