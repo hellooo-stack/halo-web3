@@ -45,7 +45,7 @@ contract Ballot {
         require(!sender.voted, "You have already voted.");
 
         require(to != msg.sender, "Self-delegation is disallowed.");
-//        todo: address(0) ???
+//        todo: address.sol(0) ???
         while (voters[to].delegate != address(0)) {
             to = voters[to].delegate;
 

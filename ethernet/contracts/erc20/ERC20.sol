@@ -107,7 +107,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      *
      * Requirements:
      *
-     * - `to` cannot be the zero address.
+     * - `to` cannot be the zero address.sol.
      * - the caller must have a balance of at least `amount`.
      */
     function transfer(address to, uint256 amount) public virtual override returns (bool) {
@@ -131,7 +131,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      *
      * Requirements:
      *
-     * - `spender` cannot be the zero address.
+     * - `spender` cannot be the zero address.sol.
      */
     function approve(address spender, uint256 amount) public virtual override returns (bool) {
         address owner = _msgSender();
@@ -150,7 +150,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      *
      * Requirements:
      *
-     * - `from` and `to` cannot be the zero address.
+     * - `from` and `to` cannot be the zero address.sol.
      * - `from` must have a balance of at least `amount`.
      * - the caller must have allowance for ``from``'s tokens of at least
      * `amount`.
@@ -172,7 +172,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      *
      * Requirements:
      *
-     * - `spender` cannot be the zero address.
+     * - `spender` cannot be the zero address.sol.
      */
     function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
         address owner = _msgSender();
@@ -190,7 +190,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      *
      * Requirements:
      *
-     * - `spender` cannot be the zero address.
+     * - `spender` cannot be the zero address.sol.
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
@@ -215,8 +215,8 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      *
      * Requirements:
      *
-     * - `from` cannot be the zero address.
-     * - `to` cannot be the zero address.
+     * - `from` cannot be the zero address.sol.
+     * - `to` cannot be the zero address.sol.
      * - `from` must have a balance of at least `amount`.
      */
     function _transfer(address from, address to, uint256 amount) internal virtual {
@@ -242,11 +242,11 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     /** @dev Creates `amount` tokens and assigns them to `account`, increasing
      * the total supply.
      *
-     * Emits a {Transfer} event with `from` set to the zero address.
+     * Emits a {Transfer} event with `from` set to the zero address.sol.
      *
      * Requirements:
      *
-     * - `account` cannot be the zero address.
+     * - `account` cannot be the zero address.sol.
      */
     function _mint(address account, uint256 amount) internal virtual {
         require(account != address(0), "ERC20: mint to the zero address");
@@ -267,11 +267,11 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      * @dev Destroys `amount` tokens from `account`, reducing the
      * total supply.
      *
-     * Emits a {Transfer} event with `to` set to the zero address.
+     * Emits a {Transfer} event with `to` set to the zero address.sol.
      *
      * Requirements:
      *
-     * - `account` cannot be the zero address.
+     * - `account` cannot be the zero address.sol.
      * - `account` must have at least `amount` tokens.
      */
     function _burn(address account, uint256 amount) internal virtual {
@@ -302,8 +302,8 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      *
      * Requirements:
      *
-     * - `owner` cannot be the zero address.
-     * - `spender` cannot be the zero address.
+     * - `owner` cannot be the zero address.sol.
+     * - `spender` cannot be the zero address.sol.
      */
     function _approve(address owner, address spender, uint256 amount) internal virtual {
         require(owner != address(0), "ERC20: approve from the zero address");

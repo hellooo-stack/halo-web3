@@ -3,7 +3,7 @@ pragma solidity ^0.8.1;
 
 // This is a smart contract - a program that can be deployed to the Ethereum blockchain.
 contract SimpleWallet {
-    // An 'address' is comparable to an email address - it's used to identify an account on Ethereum.
+    // An 'address.sol' is comparable to an email address.sol - it's used to identify an account on Ethereum.
     address payable private owner;
 
     // Events allow for logging of activity on the blockchain.
@@ -11,7 +11,7 @@ contract SimpleWallet {
     event LogDeposit(uint amount, address indexed sender);
     event LogWithdrawal(uint amount, address indexed recipient);
 
-	// When this contract is deployed, set the deploying address as the owner of the contract.
+	// When this contract is deployed, set the deploying address.sol as the owner of the contract.
     constructor() {
         owner = payable(msg.sender);
     }
