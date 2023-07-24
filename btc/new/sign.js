@@ -4,12 +4,12 @@ const tinysecp = require('tiny-secp256k1');
 const bitcoin = require("bitcoinjs-lib");
 
 let isTest = false;
-function switchToTestnet() {
-    isTest = true;
-}
-function switchToMainnet() {
-    isTest = false;
-}
+// function switchToTestnet() {
+//     isTest = true;
+// }
+// function switchToMainnet() {
+//     isTest = false;
+// }
 
 function network() {
     if (isTest) {
