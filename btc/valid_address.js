@@ -41,14 +41,14 @@ let isTestNet = false;
 let network = isTestNet ? networks.testnet : networks.bitcoin;
 
 
-const wif = 'L263wKNrw1U5sCvmQKZauH2oP9ziMkEC9pqje48UUVfpR5ggpFpG';
+const wif = 'L4dkwu8AbcNG85QeDRPRJndjPavG6aNPC1SvHuzh1mSA3VF7SKQD';
 const ECPair = ECPairFactory(ecc);
 const keyPair = ECPair.fromWIF(wif, network);
 const privateKey = keyPair.privateKey;
 const publicKey = keyPair.publicKey;
 
 const {address: p2wpkhAddress} = bitcoin.payments.p2wpkh({pubkey: publicKey});
-const {address: p2trAddress} = bitcoin.payments.p2tr({pubkey: publicKey.slice(1, 33)});
+const {address: p2trAddress} = bitcoin.payments.p2tr({internalPubkey: publicKey.slice(1, 33)});
 const {address: p2pkhAddress} = bitcoin.payments.p2pkh({pubkey: keyPair.publicKey});
 console.log('privateKey: ', privateKey.toString('hex'));
 console.log('publicKey: ', publicKey.toString('hex'));
