@@ -8,5 +8,9 @@
     "bs58check": "^3.0.1",
     "ecpair": "^2.1.0",
     "tiny-secp256k1": "^2.2.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.3",
+    "jest": "^29.6.1"
   }
 }
