@@ -41,7 +41,7 @@ let isTestNet = false;
 let network = isTestNet ? networks.testnet : networks.bitcoin;
 
 
-const wif = 'L4dkwu8AbcNG85QeDRPRJndjPavG6aNPC1SvHuzh1mSA3VF7SKQD';
+const wif = 'L2BkH7GJAMfTBXqzemBWP6eLs5iQxGoKhBXxRU8vwkkkBMnh2Jgt';
 const ECPair = ECPairFactory(ecc);
 const keyPair = ECPair.fromWIF(wif, network);
 const privateKey = keyPair.privateKey;
