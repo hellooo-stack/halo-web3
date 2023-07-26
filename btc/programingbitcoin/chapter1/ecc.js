@@ -37,14 +37,19 @@ class FieldElement {
         if (this.prime !== other.prime) {
             throw new Error('Cannot subtract two numbers in different Fields');
         }
-        throw new Error('Subtraction not implemented for this FieldElement class');
+
+        let num = (this.num - other.num) % this.prime;
+        num = (num + this.prime) % this.prime;
+        return new FieldElement(num, this.prime);
     }
 
     multiply(other) {
         if (this.prime !== other.prime) {
             throw new Error('Cannot multiply two numbers in different Fields');
         }
-        throw new Error('Multiplication not implemented for this FieldElement class');
+
+        const num = (this.num * other.num) % this.prime;
+        return new FieldElement(num, this.prime);
     }
 
     div(other) {
@@ -55,8 +60,7 @@ class FieldElement {
     }
 
     pow(exponent) {
-        const n = exponent % (this.prime - 1);
-        const num = Math.pow(this.num, n) % this.prime;
+        const num = Math.pow(this.num, exponent) % this.prime;
         return new FieldElement(num, this.prime);
     }
 }
