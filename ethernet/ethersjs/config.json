@@ -1,0 +1,6 @@
+{
+  "eth": {
+    "main": "https://mainnet.infura.io/v3/8879adc5ace644639944a6b9505248c8",
+    "sepolia": "https://sepolia.infura.io/v3/8879adc5ace644639944a6b9505248c8"
+  }
+}
