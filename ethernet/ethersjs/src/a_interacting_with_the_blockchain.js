@@ -1,11 +1,48 @@
 const config = require('./config.js');
 const ethers = require('ethers');
+const {sign} = require("viem/accounts");
 
 async function connectBlockchain(url) {
     return new ethers.JsonRpcProvider(url);
 }
 
 async function readBlockchain(provider) {
+//     1. 区块信息
+//     当前最新区块的编号
+    const latestBlockNumber = await provider.getBlockNumber();
+//     指定区块的信息
+    const block = await provider.getBlock(latestBlockNumber);
+
+//     2. 交易信息
+    const txHash = '0xd0806b6e02dc62789eebc905f972130461e274a9e96fa2cb6e02d646b0a83a6c';
+    const transactionResponse = await provider.getTransaction(txHash);
+    // 获取交易的回执
+    const transactionReceipt = await provider.getTransactionReceipt(txHash);
+    const transactionResult = await provider.getTransactionResult(txHash);
+
+//     3. 账号信息
+    const account = config.getAccount2().address;
+//     读取已发起的交易个数，该数值被用来作为交易的nonce
+    const transactionCount = await provider.getTransactionCount(account);
+
+//     读取账号余额
+    const balance = await provider.getBalance(account);
+
+//     用ens域名查找地址，需要网络支持，比如主网
+//     const ensAddr = await provider.resolveName('198989.eth');
+//     const ensAddr1 = await provider.resolveName('nopro.eth');
+
+//     查找地址关联的ens域名
+//     const ensName = await provider.lookupAddress('0x843aa999827ae6d187F8a5b6ab4afB1B1597551D');
+
+//     读取合约字节码，如果地址对应合约不存在，或者不为合约，则返回'0x'
+    const contract = config.getContract().usdt;
+    const code = await provider.getCode(contract);
+
+
+
+//     读取nonce值
+
 }
 
 async function writeBlockchain(provider) {
@@ -16,16 +53,20 @@ async function listenEvent(provider) {
 
 }
 
-async function readBlockMetadata(provider) {
-
-}
-
-
 
 (async function () {
     // 1. connect to network
     const url = config.getNetWorkUrl();
     const provider = await connectBlockchain(url);
+
+
+    // const signer = new ethers.Wallet(config.getAccount1().privateKey, provider);
+    // let signer = new ethers.Wallet(config.getAccount1().privateKey);
+    // signer = signer.connect(provider);
+    // console.log(await signer.getAddress());
+    // const nonce = await signer.getNonce();
+    // console.log('nonce: ', nonce);
+
 
     // // 2. read blockchain
     // await readBlockchain(provider);
@@ -33,52 +74,10 @@ async function readBlockMetadata(provider) {
     // // 3. write blockchain
     // const balance = await provider.getBalance(config.getAccount1().address);
     // console.log('balance: ', balance);
-    // //
-    // const  transactionResponse = await provider.getTransaction("0xd0806b6e02dc62789eebc905f972130461e274a9e96fa2cb6e02d646b0a83a6c");
-    // console.log(transactionResponse);
     //
-    // const block = await provider.getBlock('0x19d10962fb50acca2110fcec4f517609559cf527841b8c294cb039012caaec2d');
-    // console.log('block: ', block);
-    //
-    // const latestBlockNumber = await provider.getBlockNumber();
-    // console.log('latestBlockNumber: ', latestBlockNumber);
+
+    const logs = await provider.getLogs({fromBlock: 4086956});
+    console.log('logs: ', logs);
 
 
-
-   // const accounts = await provider.listAccounts();
-   //  console.log('accounts: ', accounts);
-   //
-   //  const network = await provider.getNetwork();
-   //  console.log(network)
-   //
-   //  const transactionCount = await provider.getTransactionCount(config.getAccount1().address);
-   //  console.log('transactionCount: ', transactionCount);
-   //
-   //  const code = await provider.getCode('0x1798215Ef1462B6a903CFaEfCDA70fD3Ee116cB2');
-   //  console.log('code: ', code);
-
-    // const stateTrieStorage = await provider.getStorage(config.getAccount1().address);
-    // console.log('stateTrieStorage: ', stateTrieStorage);
-
-
-    // const txr = await provider.getTransactionReceipt('0xbae575999d3ab438c8f665f2b58339a17860e625c74bce44a6b716850c1a3680');
-    // console.log('txr: ', txr);
-    //
-    // const txrt = await provider.getTransactionResult('0xbae575999d3ab438c8f665f2b58339a17860e625c74bce44a6b716850c1a3680');
-    // console.log('txrt: ', txrt);
-
-    // const name = await provider.resolveName('nopro.eth');
-    // console.log('name: ', name);
-    //
-    // const lookupa = await provider.lookupAddress('0x843aa999827ae6d187F8a5b6ab4afB1B1597551D');
-    // console.log('lookupa: ', lookupa);
-
-    // const balance = await provider.getBalance(config.getAccount1);
-    // console.log('balance: ', balance);
-
-
-    // let blockNumber = await provider.getBlockNumber();
-    // let balance = await provider.getBalance('0xd529DeF12F16C1D9b22c095983C2972ee9427085');
-    // console.log('blockNumber: ', blockNumber);
-    // console.log('balance: ', balance);
 })();

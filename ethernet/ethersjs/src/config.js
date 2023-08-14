@@ -12,9 +12,17 @@ function getNetWorkUrl() {
 function getAccount1() {
     return config.accounts.ac1;
 }
+function getAccount2() {
+    return config.accounts.ac1;
+}
+function getContract() {
+    return config.contracts;
+}
 
 module.exports = {
     getNetwork,
     getNetWorkUrl,
-    getAccount1
+    getAccount1,
+    getAccount2,
+    getContract
 }
