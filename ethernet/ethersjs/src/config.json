@@ -11,7 +11,8 @@
       "privateKey": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
     },
     "ac2": {
-      "address": "0xCA3875f76FeeE8dDF0908c11b621e89dfaC850AE"
+      "address": "0xFCD7559128e2457EB0D39f91041C75629244cc79",
+      "privateKey": "0xFCD7559128e2457EB0D39f91041C75629244cc79"
     }
   },
   "contracts": {
