@@ -13,7 +13,7 @@ function getAccount1() {
     return config.accounts.ac1;
 }
 function getAccount2() {
-    return config.accounts.ac1;
+    return config.accounts.ac2;
 }
 function getContract() {
     return config.contracts;

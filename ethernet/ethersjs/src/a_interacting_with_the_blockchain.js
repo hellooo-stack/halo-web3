@@ -49,9 +49,13 @@ async function writeBlockchain(provider) {
 
 //     1. 获取账号对应的地址
     const address = await signer.getAddress();
+    console.log('address: ', address);
 //     2. 签名消息
+    const signature = await signer.signMessage('hello world');
+    console.log('signature: ', signature);
 //     3. 签名交易
 //     4. 估算gas
+//     const estimateGas = await signer.estimateGas()
 //     5. 发送交易
 }
 
@@ -64,7 +68,7 @@ async function listenEvent(provider) {
     const url = config.getNetWorkUrl();
     const provider = await connectBlockchain(url);
 
-    await readBlockchain(provider);
+    // await readBlockchain(provider);
     await writeBlockchain(provider);
-    await listenEvent(provider);
+    // await listenEvent(provider);
 })();
