@@ -1,7 +1,8 @@
 const config = require('./config.js');
 const ethers = require('ethers');
 
-async function connectBlockchain(url) {
+async function connectBlockchain() {
+    const url = config.getNetWorkUrl();
     return new ethers.JsonRpcProvider(url);
 }
 
@@ -65,8 +66,7 @@ async function listenEvent(provider) {
 
 
 (async function () {
-    const url = config.getNetWorkUrl();
-    const provider = await connectBlockchain(url);
+    const provider = await connectBlockchain();
 
     // await readBlockchain(provider);
     await writeBlockchain(provider);
