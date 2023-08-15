@@ -7,7 +7,7 @@ async function connectBlockchain() {
     return new ethers.JsonRpcProvider(url);
 }
 
-const swallowerContractAddress = '0xF38076912b7214216F650223AbE075AF19661FEA';
+const swallowerContractAddress = '0x0e74D2E00A912758a5597Ec5Dc7150A708BB4d90';
 
 async function readContract() {
     const provider = await connectBlockchain();
