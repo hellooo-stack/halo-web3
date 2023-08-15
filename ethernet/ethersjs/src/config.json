@@ -1,0 +1,21 @@
+{
+  "network": "ethernet",
+  "ethernet": {
+    "env": "sepolia",
+    "main": "https://mainnet.infura.io/v3/8879adc5ace644639944a6b9505248c8",
+    "sepolia": "https://sepolia.infura.io/v3/8879adc5ace644639944a6b9505248c8"
+  },
+  "accounts": {
+    "ac1": {
+      "address": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "privateKey": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+    },
+    "ac2": {
+      "address": "0xFCD7559128e2457EB0D39f91041C75629244cc79",
+      "privateKey": "0xac0974bebb9a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+    }
+  },
+  "contracts": {
+    "usdt": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+  }
+}
