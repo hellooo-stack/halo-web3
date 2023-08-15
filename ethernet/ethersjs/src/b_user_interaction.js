@@ -14,7 +14,7 @@ async function sendValue(signer) {
 async function callContract(signer) {
     const tx = await signer.sendTransaction({
         to: '0xf7c728Cc6d146D38e71A4fCf5b0742dAE0803aAB',
-        data: ethers.to  
+        data: ethers.to
     });
 
     const receipt = await tx.wait;
