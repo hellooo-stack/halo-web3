@@ -12,7 +12,13 @@ async function sendValue(signer) {
 }
 
 async function callContract(signer) {
+    const tx = await signer.sendTransaction({
+        to: '0xf7c728Cc6d146D38e71A4fCf5b0742dAE0803aAB',
+        data: ethers.to  
+    });
 
+    const receipt = await tx.wait;
+    console.log('receipt: ', receipt);
 }
 
 async function callContractWithValue(signer) {
@@ -27,7 +33,8 @@ async function callContractWithValue(signer) {
     const privateKey = config.getAccount2().privateKey;
     const signer = new ethers.Wallet(privateKey, provider);
 
-    await sendValue(signer);
+    // await sendValue(signer);
+    await callContract(signer);
 
 
 })();
