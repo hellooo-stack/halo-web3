@@ -34,3 +34,4 @@ const tx = new bitcoin.Psbt({network: network})
 const txHex = tx.toHex();
 console.log(txHex);
 
+// txHash: 57d0b3913c405d9a555d22fe7712e8ee6e5c16594c1436a0bda7bbb1c2f29682

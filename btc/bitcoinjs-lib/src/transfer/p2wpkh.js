@@ -41,3 +41,4 @@ console.log(txHex);
 // https://medium.com/@bitcoindeezy/bitcoin-basics-programming-with-bitcoinjs-lib-4a69218c0431
 // https://blockstream.info/testnet/tx/push
 
+// txHash: 70db29d9ef9da6531acc8b3de4018daf2a205e44b58b735dce73e710b88cbe5a
