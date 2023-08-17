@@ -62,7 +62,7 @@ class FieldElement {
     }
 
     pow(exponent) {
-        const num = Math.pow(this.num, exponent) % this.prime;
+        const num = this.num ** exponent % this.prime;
         return new FieldElement(num, this.prime);
     }
 
