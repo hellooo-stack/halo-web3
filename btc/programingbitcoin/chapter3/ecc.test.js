@@ -48,6 +48,14 @@ describe('FieldElementTest', () => {
     });
 
     test('test_div', () => {
+        let a = new FieldElement(3n, 31n);
+        let b = new FieldElement(24n, 31n);
+        expect(a.div(b).equals(new FieldElement(4n, 31n))).toBeTruthy();
+        a = new FieldElement(17n, 31n);
+        expect(a.pow(-3n).equals(new FieldElement(29n, 31n))).toBeTruthy();
+        a = new FieldElement(4n, 31n);
+        b = new FieldElement(11n, 31n)
+        expect(a.pow(-4n).multiply(b).equals(new FieldElement(13n, 31n))).toBeTruthy();
     });
 });
 
