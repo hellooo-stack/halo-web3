@@ -184,7 +184,38 @@ class Point {
 
 }
 
+class S256Field extends FieldElement {
+    static A = 0;
+    static B = 7;
+    static P = 2n ** 256 - 2n ** 32n - 977n;
+    static N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
+
+    constructor(num) {
+        super(num, S256Field.P);
+    }
+
+    hex() {
+        return this.num.toString(16).padStart(64, '0');
+    }
+
+    toString() {
+        return this.hex();
+    }
+
+    sqrt() {
+        this.pow((S256Field.P + 1n) / 4n);
+    }
+}
+
+class S256Point extends Point {
+    
+}
+
+
+
 module.exports = {
     FieldElement,
-    Point
+    Point,
+    S256Field,
+
 };

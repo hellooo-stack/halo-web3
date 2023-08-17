@@ -59,8 +59,24 @@ describe('FieldElementTest', () => {
     });
 });
 
+// todo
+describe('PointTest', () => {
+
+    test('test_ne', () => {
+        const a = new Point(3, -7, 5,  7);
+        const b = new Point(18, 77, 5, 7);
+        expect(a.nonEquals(b)).toBeTruthy();
+        expect(a.nonEquals(b)).toBeFalsy();
+    });
+});
+
+// todo
+describe('ECCTest', () => {
+
+});
 
 
+// https://github.com/jimmysong/pb-exercises/blob/master/session3/ecc.py
 
 
 
