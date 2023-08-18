@@ -1,3 +1,5 @@
+const {Buffer} = require("bitcoinjs-lib/src/types");
+
 class FieldElement {
     constructor(num, prime) {
         if (num >= prime || num < 0n) {
@@ -272,8 +274,8 @@ class FinitePoint extends Point {
 }
 
 class S256Field extends FieldElement {
-    static A = 0;
-    static B = 7;
+    static A = 0n;
+    static B = 7n;
     static P = 2n ** 256n - 2n ** 32n - 977n;
     static N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
 
@@ -294,10 +296,131 @@ class S256Field extends FieldElement {
     }
 }
 
-class S256Point extends Point {
+class S256Point extends FinitePoint {
     constructor(x, y) {
         super(new S256Field(x), new S256Field(y), new S256Field(S256Field.A), new S256Field(S256Field.B));
     }
+
+    toString() {
+        if (this.x == null) {
+            return 'S256Point(infinity)';
+        } else {
+            return `S256Point(${this.x.num}, ${this.y.num})`;
+        }
+    }
+
+    rmul(coefficient) {
+        const coef = coefficient % S256Field.N;
+        return super.rmul(coef);
+    }
+
+    sec(compressed = true) {
+        if (compressed) {
+            if (this.y.num % 2 === 0) {
+                return '0x02' + this.x.num.toString(16).padStart(64, '0');
+            } else {
+                return '0x03' + this.x.num.toString(16).padStart(64, '0');
+            }
+        } else {
+            return '0x04' + this.x.num.toString(16).padStart(64, '0') + this.y.num.toString(16).padStart(64, '0');
+        }
+    }
+
+    address(compressed = true,) {
+        // todo
+    }
+
+    verify(z, sig) {
+        //     todo
+    }
+
+    // parse S256Point from sec binary data
+    // sec_bin is hex string
+    parse(sec_bin) {
+        if (sec_bin.startsWith('0x')) {
+            sec_bin = sec_bin.substring(2);
+        }
+        const secBinBuffer = Buffer.from(sec_bin, 'hex');
+
+        // compressed
+        if (secBinBuffer[0] === 4) {
+            const xBuffer = secBinBuffer.subarray(1, 33);
+            const x = BigInt('0x' + xBuffer.toString('hex'));
+
+            const yBuffer = secBinBuffer.subarray(33);
+            const y = BigInt('0x' + yBuffer.toString('hex'));
+
+            return new S256Point(x, y);
+        }
+
+        const isEven = secBinBuffer[0] === 2;
+        const xBuffer = secBinBuffer.subarray(1, 33);
+        const x = BigInt('0x' + xBuffer.toString('hex'));
+        const xField = new S256Field(x);
+        // right side of the equation y^2 = x^3 + 7
+        const alpha = xField.pow(3n).add(new S256Field(S256Field.B));
+        // solve for left side
+        const beta = alpha.sqrt();
+
+        let even_beta;
+        let odd_beta;
+        if (beta.num % 2n === 0n) {
+            even_beta = beta;
+            odd_beta = new S256Field(S256Field.P - beta.num);
+        } else {
+            even_beta = new S256Field(S256Field.P - beta.num);
+            odd_beta = beta;
+        }
+
+        if (isEven) {
+            return new S256Point(xField, even_beta);
+        } else {
+            return new S256Point(xField, odd_beta);
+        }
+    }
+}
+
+class Signature {
+    constructor(r, s) {
+        // r: BigInt, s: BigInt
+        this.r = r;
+        this.s = s;
+    }
+
+    toString() {
+        return `Signature(${this.r}, ${this.s})`;
+    }
+
+    der() {
+        let result;
+
+        // convert the r part to bytes
+        let rBin = this.r.toString(16).padStart(64, '0');
+        let rBinBuffer = Buffer.from(rBin, 'hex');
+        // if rbin has a high bit, add a 00
+        if (rBinBuffer[0] >= 128) {
+            rBinBuffer = Buffer.concat([Buffer.from([0]), rBinBuffer]);
+        }
+
+        result = Buffer.concat([Buffer.from([2]), Buffer.from([rBinBuffer.length]), rBinBuffer]);
+
+        let sBin = this.s.toString(16).padStart(64, '0');
+        let sBinBuffer = Buffer.from(sBin, 'hex');
+        if (sBinBuffer[0] >= 128) {
+            sBinBuffer = Buffer.concat([Buffer.from([0]), sBinBuffer]);
+        }
+        result = Buffer.concat([result, Buffer.from([2]), Buffer.from([sBinBuffer.length]), sBinBuffer]);
+
+        return Buffer.concat([Buffer.from(0x30), result.length, result]);
+    }
+
+    parse() {
+        //     todo
+    }
+}
+
+class PrivateKey {
+
 }
 
 module.exports = {
@@ -305,5 +428,7 @@ module.exports = {
     Point,
     FinitePoint,
     S256Field,
-    S256Point
+    S256Point,
+    Signature,
+    PrivateKey
 };
