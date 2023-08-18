@@ -419,8 +419,29 @@ class Signature {
     }
 }
 
+// Generator Point
+const G = new S256Point(0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798, 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8);
 class PrivateKey {
+    constructor(secret) {
+        this.secret = secret;
+        this.point = G.rmul(secret);
+    }
 
+    hex() {
+        return this.secret.toString(16).padStart(64, '0');
+    }
+
+    sign(z) {
+
+    }
+
+    deterministic_k(z) {
+
+    }
+
+    wif() {
+
+    }
 }
 
 module.exports = {
