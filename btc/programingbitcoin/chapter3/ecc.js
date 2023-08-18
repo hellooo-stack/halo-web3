@@ -183,36 +183,13 @@ class Point {
     }
 }
 
-class S256Field extends FieldElement {
-    static A = 0;
-    static B = 7;
-    static P = 2n ** 256n - 2n ** 32n - 977n;
-    static N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
-
-    constructor(num) {
-        super(num, S256Field.P);
-    }
-
-    hex() {
-        return this.num.toString(16).padStart(64, '0');
-    }
-
-    toString() {
-        return this.hex();
-    }
-
-    sqrt() {
-        this.pow((S256Field.P + 1n) / 4n);
-    }
-}
-
 class FinitePoint extends Point {
     constructor(x, y, a, b) {
         super(x, y, a, b);
     }
 
     isValid() {
-        if (this.y.pow(2n).nonEquals(this.x.pow(3n).add(this.a.multiply(this.x)).add(b))) {
+        if (this.y.pow(2n).nonEquals(this.x.pow(3n).add(this.a.multiply(this.x)).add(this.b))) {
             throw new Error(`(${this.x}, ${this.y}) is not on the curve`);
         }
     }
@@ -227,7 +204,7 @@ class FinitePoint extends Point {
 
     add(other) {
         if (this.a.nonEquals(other.a) || this.b.nonEquals(other.b)) {
-            throw new Error(`Points ${toString()}, ${other.toString()} are not on the same curve'`);
+            throw new Error(`FinitePoint ${toString()}, ${other.toString()} are not on the same curve'`);
         }
 
         // Case 0.0: this is the point at infinity, return other
@@ -240,7 +217,7 @@ class FinitePoint extends Point {
             return this;
         }
 
-        // Case 1: self.x == other.x, self.y != other.y
+        // Case 1: this.x == other.x, this.y != other.y
         // Result is point at infinity
         if (this.x.equals(other.x) && this.y.nonEquals(other.y)) {
             return new Point(null, null, this.a, this.b);
@@ -260,9 +237,10 @@ class FinitePoint extends Point {
             // Case 3: this === other
             // Formula (x3,y3)=(x1,y1)+(x1,y1)
             // s=(3*x1**2+a)/(2*y1)
-            const s = (this.x.pow(2n).multiply(3n)).div(this.y.multiply(2n));
+            const s = this.x.pow(2n).rmul(3n).div(this.y.rmul(2n));
+            // const s = (this.x.pow(2n).multiply(3n)).div();
             // x3=s**2-2*x1
-            const x = s.pow(2n).subtract(this.x.multiply(2n));
+            const x = s.pow(2n).subtract(this.x.rmul(2n));
             // y3=s*(x1-x3)-y1
             const y = s.multiply(this.x.subtract(x)).subtract(this.y);
             return new Point(x, y, this.a, this.b);
@@ -290,16 +268,39 @@ class FinitePoint extends Point {
 
 }
 
+class S256Field extends FieldElement {
+    static A = 0;
+    static B = 7;
+    static P = 2n ** 256n - 2n ** 32n - 977n;
+    static N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
+
+    constructor(num) {
+        super(num, S256Field.P);
+    }
+
+    hex() {
+        return this.num.toString(16).padStart(64, '0');
+    }
+
+    toString() {
+        return this.hex();
+    }
+
+    sqrt() {
+        this.pow((S256Field.P + 1n) / 4n);
+    }
+}
+
 class S256Point extends Point {
     constructor(x, y) {
         super(new S256Field(x), new S256Field(y), new S256Field(S256Field.A), new S256Field(S256Field.B));
     }
 }
 
-
 module.exports = {
     FieldElement,
     Point,
+    FinitePoint,
     S256Field,
-
+    S256Point
 };
