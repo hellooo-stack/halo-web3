@@ -105,11 +105,7 @@ class Point {
     }
 
     equals(other) {
-        // todo: deep compare
-        return this.x.equals(other.x)
-            && this.y.equals(other.y)
-            && this.a.equals(other.a)
-            && this.b.equals(other.b);
+        return this.x === other.x && this.y === other.y && this.a === other.a && this.b === other.b;
     }
 
     nonEquals(other) {
@@ -190,7 +186,7 @@ class Point {
 class S256Field extends FieldElement {
     static A = 0;
     static B = 7;
-    static P = 2n ** 256 - 2n ** 32n - 977n;
+    static P = 2n ** 256n - 2n ** 32n - 977n;
     static N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
 
     constructor(num) {
