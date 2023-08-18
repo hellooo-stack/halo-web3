@@ -169,7 +169,8 @@ describe('FinitePointTest', () => {
             const x3 = new FieldElement(x3_raw, prime);
             const y3 = new FieldElement(y3_raw, prime);
             const p3 = new FinitePoint(x3, y3, a, b);
-            expect(p1.add(p2).equals(p3)).toBeTruthy();
+            const result = p1.add(p2);
+            expect(result.equals(p3)).toBeTruthy();
         }
     });
     test('test_rmul', () => {

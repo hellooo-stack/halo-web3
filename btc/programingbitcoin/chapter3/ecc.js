@@ -194,6 +194,10 @@ class FinitePoint extends Point {
         }
     }
 
+    equals(other) {
+        return this.x.equals(other.x) && this.y.equals(other.y) && this.a.equals(other.a) && this.b.equals(other.b);
+    }
+
     toString() {
         if (this.x === undefined || this.x === null) {
             return 'Point(infinity)';
@@ -220,7 +224,7 @@ class FinitePoint extends Point {
         // Case 1: this.x == other.x, this.y != other.y
         // Result is point at infinity
         if (this.x.equals(other.x) && this.y.nonEquals(other.y)) {
-            return new Point(null, null, this.a, this.b);
+            return new FinitePoint(null, null, this.a, this.b);
         }
 
         // Case 2: this.x !== other.x
@@ -232,7 +236,7 @@ class FinitePoint extends Point {
             const x = s.pow(2n).subtract(this.x).subtract(other.x);
             // y3=s*(x1-x3)-y1
             const y = s.multiply(this.x.subtract(x)).subtract(this.y);
-            return new Point(x, y, this.a, this.b);
+            return new FinitePoint(x, y, this.a, this.b);
         } else {
             // Case 3: this === other
             // Formula (x3,y3)=(x1,y1)+(x1,y1)
@@ -243,7 +247,7 @@ class FinitePoint extends Point {
             const x = s.pow(2n).subtract(this.x.rmul(2n));
             // y3=s*(x1-x3)-y1
             const y = s.multiply(this.x.subtract(x)).subtract(this.y);
-            return new Point(x, y, this.a, this.b);
+            return new FinitePoint(x, y, this.a, this.b);
         }
     }
 
