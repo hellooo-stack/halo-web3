@@ -187,12 +187,12 @@ describe('FinitePointTest', () => {
 
         const multiplications = [
             // (coefficient, x1, y1, x2, y2)
-            [2, 192, 105, 49, 71],
-            [2, 143, 98, 64, 168],
-            [2, 47, 71, 36, 111],
-            [4, 47, 71, 194, 51],
-            [8, 47, 71, 116, 55],
-            [21, 47, 71, null, null]
+            [2n, 192n, 105n, 49n, 71n],
+            [2n, 143n, 98n, 64n, 168n],
+            [2n, 47n, 71n, 36n, 111n],
+            [4n, 47n, 71n, 194n, 51n],
+            [8n, 47n, 71n, 116n, 55n],
+            [21n, 47n, 71n, null, null]
         ];
         for (const multiplication of multiplications) {
             const [s, x1_raw, y1_raw, x2_raw, y2_raw] = multiplication;
@@ -213,7 +213,7 @@ describe('FinitePointTest', () => {
             } else {
                 const x2 = new FieldElement(x2_raw, prime);
                 const y2 = new FieldElement(y2_raw, prime);
-                const p2 = new Point(x2, y2, a, b);
+                p2 = new FinitePoint(x2, y2, a, b);
             }
 
             expect(p1.rmul(s).equals(p2)).toBeTruthy();

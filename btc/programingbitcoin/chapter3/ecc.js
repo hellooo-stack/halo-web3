@@ -195,14 +195,15 @@ class FinitePoint extends Point {
     }
 
     equals(other) {
-        return this.x.equals(other.x) && this.y.equals(other.y) && this.a.equals(other.a) && this.b.equals(other.b);
+        return (this.x == null && other.x == null && this.y == null && other.y == null && this.a.equals(other.a) && this.b.equals(other.b))
+            || (this.x.equals(other.x) && this.y.equals(other.y) && this.a.equals(other.a) && this.b.equals(other.b));
     }
 
     toString() {
         if (this.x === undefined || this.x === null) {
-            return 'Point(infinity)';
+            return 'FinitePoint(infinity)';
         } else {
-            return `Point(${this.x.num},${this.y.num})_${this.a.num}_${this.b.num}`;
+            return `FinitePoint(${this.x.num},${this.y.num})_${this.a.num}_${this.b.num}`;
         }
     }
 
@@ -255,21 +256,19 @@ class FinitePoint extends Point {
         let coef = coefficient;
         let current = this;
         // rmul calculates coefficient * this
-        let result = new Point(null, null, this.a, this.b);
+        let result = new FinitePoint(null, null, this.a, this.b);
 
         while (coef) {
-            if (coef & 1) {
+            if (coef & 1n) {
                 result = result.add(current);
             }
 
             current = current.add(current);
-            coef >>= 1;
+            coef >>= 1n;
         }
 
         return result;
     }
-
-
 }
 
 class S256Field extends FieldElement {
