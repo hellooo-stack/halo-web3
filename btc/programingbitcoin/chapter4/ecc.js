@@ -1,7 +1,7 @@
 const {Buffer} = require("bitcoinjs-lib/src/types");
-const {bigIntToBuffer, bufferToBigInt} = require("./numbers");
+const {bigIntToBuffer, bufferToBigInt, randomInt, randomBigInt} = require("./numbers");
 const crypto = require("crypto");
-const {encodeBase58Checksum} = require("./helper");
+const {encodeBase58Checksum, hash160} = require("./helper");
 
 class FieldElement {
     constructor(num, prime) {
@@ -280,7 +280,7 @@ class S256Field extends FieldElement {
     static A = 0n;
     static B = 7n;
     static P = 2n ** 256n - 2n ** 32n - 977n;
-    static N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
+    static N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141n;
 
     constructor(num) {
         super(num, S256Field.P);
@@ -320,21 +320,40 @@ class S256Point extends FinitePoint {
     sec(compressed = true) {
         if (compressed) {
             if (this.y.num % 2 === 0) {
-                return '0x02' + this.x.num.toString(16).padStart(64, '0');
+                return Buffer.concat([Buffer.alloc(1, 0x02), bigIntToBuffer(this.x.num)]);
             } else {
-                return '0x03' + this.x.num.toString(16).padStart(64, '0');
+                return Buffer.concat([Buffer.alloc(1, 0x03), bigIntToBuffer(this.x.num)]);
             }
         } else {
-            return '0x04' + this.x.num.toString(16).padStart(64, '0') + this.y.num.toString(16).padStart(64, '0');
+            return Buffer.concat([Buffer.alloc(1, 0x04), bigIntToBuffer(this.x.num)]);
         }
     }
 
-    address(compressed = true,) {
-        // todo
+    address(compressed = true, network = 'mainnet') {
+        const sec = this.sec(compressed);
+        const h160 = hash160(sec);
+
+        let prefix;
+        if (network === 'testnet' || network === 'signet') {
+            prefix = Buffer.alloc(1, 0x6f);
+        } else {
+            prefix = Buffer.alloc(1, 0x00);
+        }
+
+        return encodeBase58Checksum(Buffer.concat([prefix, h160]));
     }
 
     verify(z, sig) {
-        //     todo
+//        remember sig.r and sig.s are the main things we're checking
+//        remember 1/s = pow(s, -1, N)
+        const sInv = sig.s ** -1n % S256Field.N;
+//        u = z / s
+        const u = z * sInv % S256Field.N;
+//        v = r / s
+        const v = sig.r * sInv % S256Field.N;
+//        u*G + v*P should have as the x coordinate, r
+        const total = G.rmul(u).add(this.rmul(v));
+        return total.x.num === sig.r;
     }
 
     // parse S256Point from sec binary data
@@ -418,12 +437,13 @@ class Signature {
     }
 
     parse() {
-        //     todo
+//        todo
     }
 }
 
 // Generator Point
-const G = new S256Point(0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798, 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8);
+const G = new S256Point(0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798n, 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8n);
+
 class PrivateKey {
     constructor(secret) {
         this.secret = secret;
@@ -435,7 +455,17 @@ class PrivateKey {
     }
 
     sign(z) {
-
+//        we need a random number k
+        const k = randomBigInt(S256Field.N);
+//        r is the x coordinate of the resulting point k*G
+        const r = G.rmul(k).x.num;
+//        remember 1/k = pow(k, -1, N)
+        const kInv = k ** -1n % S256Field.N;
+        let s = (z + r * this.secret) * kInv % S256Field.N;
+        if (s > S256Field.N / 2) {
+            s = S256Field.N - s;
+        }
+        return new Signature(r, s);
     }
 
     deterministic_k(z) {
@@ -447,9 +477,6 @@ class PrivateKey {
 
         const zBytes = bigIntToBuffer(z);
         const secretBytes = bigIntToBuffer(this.secret);
-
-        const sha256 = crypto.createHash('sha256');
-
 
         k = crypto.createHmac('sha256', k)
             .update(Buffer.concat([v, Buffer.from([0]), secretBytes, zBytes]))

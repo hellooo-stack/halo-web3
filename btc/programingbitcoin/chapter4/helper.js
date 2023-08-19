@@ -1,53 +1,72 @@
-const crypto = require(crypto);
+const crypto = require('crypto');
+const {bufferToBigInt} = require("./numbers");
 
 const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
-// s is hex string
-function encodeBase58(s) {
-    if (s.startsWith('0x')) {
-        s = s.substring(2);
-    }
-
-    const sBuffer = Buffer.from(s, 'hex');
-
+/**
+ *
+ * @param buf Buffer
+ * @returns {string} string
+ */
+function encodeBase58(buf) {
     let zeroCount = 0;
-    for (let i = 0; i < sBuffer.length; i++) {
-        if (sBuffer[i] === 0) {
+    for (let i = 0; i < buf.length; i++) {
+        if (buf[i] === 0) {
             zeroCount += 1;
         } else {
             break;
         }
     }
 
+    let num = bufferToBigInt(buf);
     let result = '';
     let prefix = '1'.repeat(zeroCount);
-    let dividend = BigInt('0x' + s);
-    while (dividend > 0n) {
-        const {quotient, remainder} = divmod(dividend, 58n);
-        dividend = quotient;
+    while (num > 0n) {
+        const {quotient, remainder} = divmod(num, 58n);
+        num = quotient;
         result = BASE58_ALPHABET[remainder] + result;
     }
 
     return prefix + result;
 }
 
+/**
+ *
+ * @param buf Buffer
+ * @returns {string} string
+ */
 function encodeBase58Checksum(buf) {
-    return Buffer.concat([buf, hash256(buf).subarray(0, 4)]);
+    const checkSum = hash256(buf).subarray(0, 4);
+    return encodeBase58(Buffer.concat([buf, checkSum]));
 }
 
-function hash256(s) {
+/**
+ *
+ * @param str string
+ * @returns {*} Buffer
+ */
+function hash256(buf) {
     const sha256 = crypto.createHash('sha256');
-    sha256.update(s);
+    sha256.update(buf);
 
     return crypto.createHash('sha256').update(sha256.digest()).digest();
 }
 
-function hash160(s) {
+console.log(hash256(Buffer.from([0x01])));
+console.log(hash256('01'));
+console.log(hash256('0x01'));
+
+/**
+ *
+ * @param str string
+ * @returns {*} Buffer
+ */
+function hash160(str) {
     const sha256 = crypto.createHash('sha256');
-    sha256.update(s);
+    sha256.update(str);
 
     const ripemd160 = crypto.createHash('ripemd160');
-    ripemd160.update(s.digest());
+    ripemd160.update(str.digest());
 
     return ripemd160.digest();
 }

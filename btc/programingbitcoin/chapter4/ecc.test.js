@@ -1,4 +1,5 @@
 const {Point, FieldElement, FinitePoint, PrivateKey} = require('./ecc');
+const {randomBigInt} = require("./numbers");
 
 describe('FieldElementTest', () => {
 
@@ -231,7 +232,10 @@ describe('SignatureTest', () => {
 
 describe('PrivateKeyTest', () => {
     test('test_sign', () => {
-        const pk = new PrivateKey()
+        const pk = new PrivateKey(randomBigInt(2n ** 256n));
+        const z = randomBigInt(2n ** 256n);
+        const sig = pk.sign(z);
+        expect(pk.point.verify(z, sig)).toBeTruthy();
     });
 });
 

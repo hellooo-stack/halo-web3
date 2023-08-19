@@ -9,12 +9,32 @@ function bigIntToBuffer(num, bytes = 32) {
 }
 
 function bufferToBigInt(buf) {
-    return BigInt('0x' + buf.toString('hex'));
+    const hexs = '0x' + buf.toString('hex');
+    return BigInt(hexs);
+}
+
+function randomBigInt(max) {
+    const buf = Buffer.alloc(32);
+    for (let i = 31; i >= 0; i--) {
+        let randomByte = 0;
+        for (let j = 0; j < 8; j++) {
+            const randomBit = Math.round(Math.random());
+            randomByte |= (randomBit << j);
+        }
+
+        buf.fill(Buffer.alloc(1, randomByte), i, i + 1);
+        if (bufferToBigInt(buf) >= max) {
+            buf.fill(Buffer.alloc(1, 0x0), i, i + 1);
+            return bufferToBigInt(buf);
+        }
+    }
+
+    return bufferToBigInt(buf);
 }
 
 module.exports = {
     bigIntToBuffer,
-    bufferToBigInt
+    bufferToBigInt,
+    randomBigInt
 }
-console.log(bigIntToBuffer(1200n));
-console.log(bufferToBigInt(bigIntToBuffer(1200n)));
+
