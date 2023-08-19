@@ -238,10 +238,6 @@ describe('PrivateKeyTest', () => {
         const z = randomBigInt(2n ** 256n);
         const sig = pk.sign(z);
 
-        console.log('privateKey: ', privateKey);
-        console.log('z: ', z);
-        console.log('sig: ', sig);
-
         expect(pk.point.verify(z, sig)).toBeTruthy();
     });
 });

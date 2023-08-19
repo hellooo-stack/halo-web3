@@ -52,10 +52,6 @@ function hash256(buf) {
     return crypto.createHash('sha256').update(sha256.digest()).digest();
 }
 
-console.log(hash256(Buffer.from([0x01])));
-console.log(hash256('01'));
-console.log(hash256('0x01'));
-
 /**
  *
  * @param str string

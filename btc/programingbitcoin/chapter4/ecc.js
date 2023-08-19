@@ -352,7 +352,7 @@ class S256Point extends FinitePoint {
     verify(z, sig) {
 //        remember sig.r and sig.s are the main things we're checking
 //        remember 1/s = pow(s, -1, N)
-        const sInv = pow(sig.s, -1, S256Field.N);
+        const sInv = pow(sig.s, S256Field.N - 2n, S256Field.N);
 //        u = z / s
         const u = z * sInv % S256Field.N;
 //        v = r / s
@@ -466,7 +466,7 @@ class PrivateKey {
 //        r is the x coordinate of the resulting point k*G
         const r = G.rmul(k).x.num;
 //        remember 1/k = pow(k, -1, N)
-        const kInv = pow(k, -1n, S256Field.N);
+        const kInv = pow(k, S256Field.N - 2n, S256Field.N);
         let s = (z + r * this.secret) * kInv % S256Field.N;
         if (s > S256Field.N / 2n) {
             s = S256Field.N - s;
