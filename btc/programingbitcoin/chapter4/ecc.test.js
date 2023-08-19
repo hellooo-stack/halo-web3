@@ -1,4 +1,4 @@
-const {Point, FieldElement, FinitePoint} = require('./ecc');
+const {Point, FieldElement, FinitePoint, PrivateKey} = require('./ecc');
 
 describe('FieldElementTest', () => {
 
@@ -230,7 +230,9 @@ describe('SignatureTest', () => {
 });
 
 describe('PrivateKeyTest', () => {
-//     todo
+    test('test_sign', () => {
+        const pk = new PrivateKey()
+    });
 });
 
 

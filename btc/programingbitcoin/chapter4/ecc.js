@@ -1,4 +1,7 @@
 const {Buffer} = require("bitcoinjs-lib/src/types");
+const {bigIntToBuffer, bufferToBigInt} = require("./numbers");
+const crypto = require("crypto");
+const {encodeBase58Checksum} = require("./helper");
 
 class FieldElement {
     constructor(num, prime) {
@@ -436,11 +439,66 @@ class PrivateKey {
     }
 
     deterministic_k(z) {
+        let k = Buffer.alloc(32, 0x00);
+        let v = Buffer.alloc(32, 0x01);
+        if (z > S256Field.N) {
+            z = -S256Field.N;
+        }
 
+        const zBytes = bigIntToBuffer(z);
+        const secretBytes = bigIntToBuffer(this.secret);
+
+        const sha256 = crypto.createHash('sha256');
+
+
+        k = crypto.createHmac('sha256', k)
+            .update(Buffer.concat([v, Buffer.from([0]), secretBytes, zBytes]))
+            .digest();
+        v = crypto.createHmac('sha256', k)
+            .update(v)
+            .digest();
+        k = crypto.createHmac('sha256', k)
+            .update(Buffer.concat([v, Buffer.from([1]), secretBytes, zBytes]))
+            .digest();
+        v = crypto.createHmac('sha256', k)
+            .update(v)
+            .digest();
+
+        while (true) {
+            v = crypto.createHmac('sha256', k)
+                .update(v)
+                .digest();
+            const candidate = bufferToBigInt(v);
+            if (candidate >= 1n && candidate < S256Field.N) {
+                return candidate;
+            }
+            k = crypto.createHmac('sha256', k)
+                .update(Buffer.concat([v, Buffer.from([0])]))
+                .digest();
+            v = crypto.createHmac('sha256', k)
+                .update(v)
+                .digest();
+        }
     }
 
-    wif() {
+    wif(compressed = true, testnet = false) {
+        const secretBytes = bigIntToBuffer(this.secret);
 
+        let prefix, suffix;
+        if (testnet) {
+            prefix = Buffer.from([0xef]);
+        } else {
+            prefix = Buffer.from([0x80]);
+        }
+
+        if (compressed) {
+            suffix = Buffer.from([0x01]);
+        } else {
+            suffix = Buffer.alloc(0);
+        }
+
+        const wifBytes = Buffer.concat([prefix, secretBytes, suffix]);
+        return encodeBase58Checksum(wifBytes);
     }
 }
 

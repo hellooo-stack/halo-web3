@@ -2,7 +2,7 @@ const crypto = require(crypto);
 
 const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
-// s is the dec string
+// s is hex string
 function encodeBase58(s) {
     if (s.startsWith('0x')) {
         s = s.substring(2);
@@ -31,8 +31,8 @@ function encodeBase58(s) {
     return prefix + result;
 }
 
-function encode_base58_checksum(raw) {
-
+function encodeBase58Checksum(buf) {
+    return Buffer.concat([buf, hash256(buf).subarray(0, 4)]);
 }
 
 function hash256(s) {
@@ -58,5 +58,10 @@ function divmod(a, b) {
     return {quotient, remainder};
 }
 
-
+module.exports = {
+    encodeBase58,
+    encodeBase58Checksum,
+    hash256,
+    hash160
+}
 
