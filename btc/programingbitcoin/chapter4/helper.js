@@ -77,10 +77,33 @@ function divmod(a, b) {
     return {quotient, remainder};
 }
 
+// bigint mod that produces a positive value
+function mod(n, m) {
+    return ((n % m) + m) % m;
+
+}
+
+// modular exponentiation
+function pow(base, exponent, modulus) {
+    if (modulus === 1n) return 0n;
+    let result = 1n;
+    base = mod(base, modulus);
+    while (exponent > 0) {
+        if (exponent & 1n) {
+            result = mod(result * base, modulus);
+        }
+        exponent = exponent >> 1n;
+        base = mod(base * base, modulus);
+    }
+    return result;
+}
+
 module.exports = {
     encodeBase58,
     encodeBase58Checksum,
     hash256,
-    hash160
+    hash160,
+    mod,
+    pow
 }
 

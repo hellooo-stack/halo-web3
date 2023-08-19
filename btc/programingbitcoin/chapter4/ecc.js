@@ -1,7 +1,6 @@
-const {Buffer} = require("bitcoinjs-lib/src/types");
 const {bigIntToBuffer, bufferToBigInt, randomInt, randomBigInt} = require("./numbers");
 const crypto = require("crypto");
-const {encodeBase58Checksum, hash160} = require("./helper");
+const {encodeBase58Checksum, hash160, pow} = require("./helper");
 
 class FieldElement {
     constructor(num, prime) {
@@ -63,7 +62,8 @@ class FieldElement {
             throw new Error('Cannot divide two numbers in different Fields');
         }
 
-        const num = (this.num * (other.num ** (this.prime - 2n) % this.prime)) % this.prime;
+        const num = (this.num * pow(other.num, this.prime - 2n, this.prime)) % this.prime;
+
         return new FieldElement(num, this.prime);
     }
 
@@ -73,7 +73,12 @@ class FieldElement {
         // in nodejs, we use this way to convert negative to positive
         let n = exponent % m;
         n = (n + m) % m;
-        const num = this.num ** n % this.prime;
+        let num;
+        try {
+            num = this.num ** n % this.prime;
+        } catch (e) {
+            console.log(e);
+        }
         return new FieldElement(num, this.prime);
     }
 
@@ -314,7 +319,8 @@ class S256Point extends FinitePoint {
 
     rmul(coefficient) {
         const coef = coefficient % S256Field.N;
-        return super.rmul(coef);
+        const finitePoint = super.rmul(coef);
+        return new S256Point(finitePoint.x.num, finitePoint.y.num);
     }
 
     sec(compressed = true) {
@@ -346,7 +352,7 @@ class S256Point extends FinitePoint {
     verify(z, sig) {
 //        remember sig.r and sig.s are the main things we're checking
 //        remember 1/s = pow(s, -1, N)
-        const sInv = sig.s ** -1n % S256Field.N;
+        const sInv = pow(sig.s, -1, S256Field.N);
 //        u = z / s
         const u = z * sInv % S256Field.N;
 //        v = r / s
@@ -456,19 +462,19 @@ class PrivateKey {
 
     sign(z) {
 //        we need a random number k
-        const k = randomBigInt(S256Field.N);
+        const k = this.deterministicK(z);
 //        r is the x coordinate of the resulting point k*G
         const r = G.rmul(k).x.num;
 //        remember 1/k = pow(k, -1, N)
-        const kInv = k ** -1n % S256Field.N;
+        const kInv = pow(k, -1n, S256Field.N);
         let s = (z + r * this.secret) * kInv % S256Field.N;
-        if (s > S256Field.N / 2) {
+        if (s > S256Field.N / 2n) {
             s = S256Field.N - s;
         }
         return new Signature(r, s);
     }
 
-    deterministic_k(z) {
+    deterministicK(z) {
         let k = Buffer.alloc(32, 0x00);
         let v = Buffer.alloc(32, 0x01);
         if (z > S256Field.N) {

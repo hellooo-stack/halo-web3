@@ -231,10 +231,17 @@ describe('SignatureTest', () => {
 });
 
 describe('PrivateKeyTest', () => {
+    const N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n;
     test('test_sign', () => {
-        const pk = new PrivateKey(randomBigInt(2n ** 256n));
+        const privateKey = randomBigInt(N);
+        const pk = new PrivateKey(privateKey);
         const z = randomBigInt(2n ** 256n);
         const sig = pk.sign(z);
+
+        console.log('privateKey: ', privateKey);
+        console.log('z: ', z);
+        console.log('sig: ', sig);
+
         expect(pk.point.verify(z, sig)).toBeTruthy();
     });
 });
