@@ -1,6 +1,7 @@
 const {bigIntToBuffer, bufferToBigInt, randomInt, randomBigInt} = require("./numbers");
 const crypto = require("crypto");
 const {encodeBase58Checksum, hash160, pow} = require("./helper");
+const {SmartBuffer} = require("smart-buffer");
 
 class FieldElement {
     constructor(num, prime) {
@@ -56,7 +57,6 @@ class FieldElement {
         return new FieldElement(num, this.prime);
     }
 
-    // todo
     div(other) {
         if (this.prime !== other.prime) {
             throw new Error('Cannot divide two numbers in different Fields');
@@ -439,11 +439,35 @@ class Signature {
         }
         result = Buffer.concat([result, Buffer.from([2]), Buffer.from([sBinBuffer.length]), sBinBuffer]);
 
-        return Buffer.concat([Buffer.from(0x30), result.length, result]);
+        return Buffer.concat([Buffer.alloc(1, 0x30), Buffer.from([result.length]), result]);
     }
 
-    parse() {
-//        todo
+    static parse(signature) {
+        const sig = SmartBuffer.fromBuffer(signature);
+        const compound = sig.readUInt8();
+        if (compound !== 0x30) {
+            throw Error("Bad Signature compound");
+        }
+        const length = sig.readUInt8();
+        if (length + 2 !== signature.length) {
+            throw Error("Bad Signature Length");
+        }
+        let marker = sig.readUInt8();
+        if (marker !== 0x02) {
+            throw Error("Bad Signature marker");
+        }
+        const rlength = sig.readUInt8();
+        const r = bufferToBigInt(sig.readBuffer(rlength));
+        marker = sig.readUInt8();
+        if (marker !== 0x02) {
+            throw Error("Bad Signature marker");
+        }
+        const slength = sig.readUInt8();
+        const s = bufferToBigInt(sig.readBuffer(slength));
+        if (signature.length !== 6 + rlength + slength) {
+            throw Error("Signature too long");
+        }
+        return new Signature(r, s);
     }
 }
 

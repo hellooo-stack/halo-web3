@@ -22,9 +22,9 @@ function encodeBase58(buf) {
     let result = '';
     let prefix = '1'.repeat(zeroCount);
     while (num > 0n) {
-        const {quotient, remainder} = divmod(num, 58n);
-        num = quotient;
-        result = BASE58_ALPHABET[remainder] + result;
+        const mod = num % 58n;
+        num = num / 58n;
+        result = BASE58_ALPHABET[Number(mod)] + result;
     }
 
     return prefix + result;
