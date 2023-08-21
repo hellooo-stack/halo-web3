@@ -106,6 +106,29 @@ function reverseBuffer(buf) {
     return reversed;
 }
 
+function encodeVarint(integer) {
+    if (integer < 0xfd) {
+        // i < 253, encode as single byte
+        return Buffer.from([integer]);
+    } else if (integer < 0x10000) {
+        // 253 < i < 2^16 - 1, start with 253 byte (fd), encode as 2 bytes (le)
+        const s = Buffer.alloc(3, 0xfd);
+        s.writeUInt16LE(integer, 1);
+        return s;
+    } else if (integer < 0x100000000) {
+        // 2^16 < i < 2^32 - 1, start with 254 byte (fe), encode as 4 bytes (le)
+        const s = Buffer.alloc(5, 0xfe);
+        s.writeUInt32LE(integer, 1);
+        return s;
+    } else if (integer < 0x10000000000000000) {
+        // 2^32 < i < 2^64 - 1, start with 255 byte (ff), encode as 8 bytes (le)
+        return Buffer.concat([Buffer.from("ff", "hex"), u64ToEndian(integer)]);
+    } else {
+        throw new Error("Integer too large");
+    }
+}
+
+
 module.exports = {
     encodeBase58,
     encodeBase58Checksum,
@@ -113,6 +136,7 @@ module.exports = {
     hash160,
     mod,
     pow,
-    reverseBuffer
+    reverseBuffer,
+    encodeVarint
 }
 
