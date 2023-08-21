@@ -7,6 +7,7 @@ const {hash160, hash256, reverseBuffer, sha1} = require('./helper');
  */
 function encodeNum(num) {
     if (num === 0) return Buffer.alloc(0);
+
     let absNum = Math.abs(num);
     const negative = num < 0;
     const result = [];
@@ -26,8 +27,14 @@ function encodeNum(num) {
     return Buffer.from(result);
 }
 
+/**
+ *
+ * @param {Buffer} element
+ * @returns {number}
+ */
 function decodeNum(element) {
     if (element.equals(Buffer.alloc(0))) return 0;
+
     const bigEndian = reverseBuffer(element);
     let negative;
     let result;
@@ -38,7 +45,7 @@ function decodeNum(element) {
         negative = false;
         result = bigEndian[0];
     }
-    for (const c of bigEndian.slice(1)) {
+    for (const c of bigEndian.subarray(1)) {
         result <<= 8;
         result += c;
     }
@@ -49,9 +56,18 @@ function decodeNum(element) {
     }
 }
 
-
+/**
+ *
+ * @param {Buffer[]} stack
+ * @returns {boolean}
+ */
 function op0(stack) {
     stack.push(encodeNum(0));
+    return true;
+}
+
+function op1Negate(stack) {
+    stack.append(encodeNum(-1));
     return true;
 }
 
@@ -135,7 +151,63 @@ function op16(stack) {
     return true;
 }
 
+function opNop(stack) {
+    return true;
+}
 
+function opIf(stack, items) {
+    if (stack.length < 1) {
+        return false;
+    }
+
+    const trueItems = [];
+    const falseItems = [];
+    let currentArray = trueItems;
+    let found = false;
+    let numEndIfsNeeded = 1;
+    while (items.length > 0) {
+        const item = items.pop();
+        if (item === 99 || item === 100) {
+            numEndIfsNeeded += 1;
+            currentArray.push(item);
+        } else if (numEndIfsNeeded === 1 && item === 103) {
+            currentArray = falseItems;
+        } else if (item === 104) {
+            if (numEndIfsNeeded === 1) {
+                found = true;
+                break;
+            } else {
+                numEndIfsNeeded -= 1;
+                currentArray.push(item);
+            }
+        } else {
+            currentArray.push(item);
+        }
+    }
+    if (!found) {
+        return false;
+    }
+    const element = stack.pop();
+    if (decodeNum(element) === 0) {
+        items.unshift(falseItems);
+    } else {
+        items.unshift(trueItems);
+    }
+
+    return true;
+}
+
+function opNotIf(stack, items) {
+    // todo
+}
+
+function opVerify(stack) {
+    if (stack.length < 1) {
+        return false;
+    }
+    const element = stack.pop();
+    return decodeNum(element) !== 0;
+}
 
 
 
