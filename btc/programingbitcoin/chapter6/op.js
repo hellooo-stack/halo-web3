@@ -1,4 +1,5 @@
 const {hash160, hash256, reverseBuffer, sha1} = require('./helper');
+const {S256Point, Signature} = require("./ecc");
 
 /**
  *
@@ -209,9 +210,28 @@ function opVerify(stack) {
     return decodeNum(element) !== 0;
 }
 
-
-
-
+function opCheckSig(stack, z) {
+    if (stack.length < 2) {
+        return false;
+    }
+    const secPubkey = stack.pop();
+    let derSignature = stack.pop();
+    derSignature = derSignature.slice(0, derSignature.length - 1);
+    let point;
+    let sig;
+    try {
+        point = S256Point.parse(secPubkey);
+        sig = Signature.parse(derSignature);
+    } catch {
+        return false;
+    }
+    if (point.verify(z, sig)) {
+        stack.push(encodeNum(1));
+    } else {
+        stack.push(encodeNum(0));
+    }
+    return true;
+}
 
 exports.OP_CODE_FUNCTIONS = {
     0: op0,
@@ -232,19 +252,19 @@ exports.OP_CODE_FUNCTIONS = {
     95: op15,
     96: op16,
     105: opVerify,
-    110: op2dup,
-    124: opSwap,
-    135: opEqual,
-    136: opEqualVerify,
-    145: opNot,
-    147: opAdd,
-    149: opMul,
-    118: opDup,
-    167: opSha1,
-    169: opHash160,
-    170: opHash256,
-    172: opChecksig,
-    174: opCheckMultisig
+    // 110: op2dup,
+    // 124: opSwap,
+    // 135: opEqual,
+    // 136: opEqualVerify,
+    // 145: opNot,
+    // 147: opAdd,
+    // 149: opMul,
+    // 118: opDup,
+    // 167: opSha1,
+    // 169: opHash160,
+    // 170: opHash256,
+    // 172: opChecksig,
+    // 174: opCheckMultisig
 }
 
 exports.OP_CODE_NAMES = {
@@ -383,73 +403,78 @@ exports.Opcode = {
     "OP_CHECKMULTISIGVERIFY": 175,
     "OP_CHECKSIGADD": 186,
     "OP_RETURN_186": 186,
-    "OP_RETURN_187",
-    "OP_RETURN_188",
-    "OP_RETURN_189",
-    "OP_RETURN_190",
-    "OP_RETURN_191",
-    "OP_RETURN_192",
-    "OP_RETURN_193",
-    "OP_RETURN_194",
-    "OP_RETURN_195",
-    "OP_RETURN_196",
-    "OP_RETURN_197",
-    "OP_RETURN_198",
-    OP_RETURN_199,
-    OP_RETURN_200,
-    OP_RETURN_201,
-    OP_RETURN_202,
-    OP_RETURN_203,
-    OP_RETURN_204,
-    OP_RETURN_205,
-    OP_RETURN_206,
-    OP_RETURN_207,
-    OP_RETURN_208,
-    OP_RETURN_209,
-    OP_RETURN_210,
-    OP_RETURN_211,
-    OP_RETURN_212,
-    OP_RETURN_213,
-    OP_RETURN_214,
-    OP_RETURN_215,
-    OP_RETURN_216,
-    OP_RETURN_217,
-    OP_RETURN_218,
-    OP_RETURN_219,
-    OP_RETURN_220,
-    OP_RETURN_221,
-    OP_RETURN_222,
-    OP_RETURN_223,
-    OP_RETURN_224,
-    OP_RETURN_225,
-    OP_RETURN_226,
-    OP_RETURN_227,
-    OP_RETURN_228,
-    "OP_RETURN_229": 229,
-    OP_RETURN_230,
-    OP_RETURN_231,
-    OP_RETURN_232,
-    OP_RETURN_233,
-    OP_RETURN_234,
-    OP_RETURN_235,
-    OP_RETURN_236,
-    OP_RETURN_237,
-    "OP_RETURN_238": 238,
-    OP_RETURN_239,
-    OP_RETURN_240,
-    OP_RETURN_241,
-    OP_RETURN_242,
-    OP_RETURN_243,
-    OP_RETURN_244,
-    OP_RETURN_245,
-    OP_RETURN_246,
-    OP_RETURN_247,
-    OP_RETURN_248,
-    OP_RETURN_249,
-    OP_RETURN_250,
-    OP_RETURN_251,
-    OP_RETURN_252,
-    OP_RETURN_253,
-    OP_RETURN_254,
-    OP_RETURN_255
+    "OP_RETURN_187": 187,
+    "OP_RETURN_188": 188,
+    "OP_RETURN_189": 189,
+    "OP_RETURN_190": 190,
+    "OP_RETURN_191": 191,
+    "OP_RETURN_192": 192,
+    "OP_RETURN_193": 193,
+    "OP_RETURN_194": 194,
+    "OP_RETURN_195": 195,
+    "OP_RETURN_196": 196,
+    "OP_RETURN_197": 197,
+    "OP_RETURN_198": 198,
+    "OP_RETURN_199": 199,
+    "OP_RETURN_200": 200,
+    "OP_RETURN_201": 201,
+    "OP_RETURN_202": 202,
+    "OP_RETURN_203": 203,
+    "OP_RETURN_204": 204,
+    "OP_RETURN_205": 205,
+    "OP_RETURN_206": 206,
+    "OP_RETURN_207": 207,
+    "OP_RETURN_208": 208,
+    "OP_RETURN_209": 209, // OP_RETURN_210,
+    // OP_RETURN_211,
+    // OP_RETURN_212,
+    // OP_RETURN_213,
+    // OP_RETURN_214,
+    // OP_RETURN_215,
+    // OP_RETURN_216,
+    // OP_RETURN_217,
+    // OP_RETURN_218,
+    // OP_RETURN_219,
+    // OP_RETURN_220,
+    // OP_RETURN_221,
+    // OP_RETURN_222,
+    // OP_RETURN_223,
+    // OP_RETURN_224,
+    // OP_RETURN_225,
+    // OP_RETURN_226,
+    // OP_RETURN_227,
+    // OP_RETURN_228,
+    // "OP_RETURN_229": 229,
+    // OP_RETURN_230,
+    // OP_RETURN_231,
+    // OP_RETURN_232,
+    // OP_RETURN_233,
+    // OP_RETURN_234,
+    // OP_RETURN_235,
+    // OP_RETURN_236,
+    // OP_RETURN_237,
+    // "OP_RETURN_238": 238,
+    // OP_RETURN_239,
+    // OP_RETURN_240,
+    // OP_RETURN_241,
+    // OP_RETURN_242,
+    // OP_RETURN_243,
+    // OP_RETURN_244,
+    // OP_RETURN_245,
+    // OP_RETURN_246,
+    // OP_RETURN_247,
+    // OP_RETURN_248,
+    // OP_RETURN_249,
+    // OP_RETURN_250,
+    // OP_RETURN_251,
+    // OP_RETURN_252,
+    // OP_RETURN_253,
+    // OP_RETURN_254,
+    // OP_RETURN_255
+}
+
+module.exports = {
+    encodeNum,
+    decodeNum,
+    opCheckSig
 }

@@ -1,4 +1,6 @@
 const crypto = require('crypto');
+const SmartBuffer = require("smart-buffer").SmartBuffer;
+
 
 function _sha256() {
     return crypto.createHash('sha256');
@@ -90,19 +92,36 @@ function decodeBase58(str) {
     return combined.subarray(1, combined.length - 4);
 }
 
+// /**
+//  *
+//  * @param {Buffer} buffer
+//  * @returns {*|number|bigint}
+//  */
+// function readVarint(buffer) {
+//     const i = buffer.readUInt8();
+//     if (i === 0xfd) {
+//         return toBigIntLE(buffer.subarray(1, 1 + 2));
+//     } else if (i === 0xfe) {
+//         return toBigIntLE(buffer.subarray(1, 1 + 4));
+//     } else if (i === 0xff) {
+//         return toBigIntLE(buffer.subarray(1, 1 + 8));
+//     } else {
+//         return BigInt(i);
+//     }
+// }
+
 /**
  *
- * @param {Buffer} buffer
- * @returns {*|number|bigint}
+ * @param {SmartBuffer} buffer
  */
 function readVarint(buffer) {
     const i = buffer.readUInt8();
     if (i === 0xfd) {
-        return toBigIntLE(buffer.subarray(1, 1 + 2));
+        return toBigIntLE(buffer.readBuffer(2));
     } else if (i === 0xfe) {
-        return toBigIntLE(buffer.subarray(1, 1 + 4));
+        return toBigIntLE(buffer.readBuffer(4));
     } else if (i === 0xff) {
-        return toBigIntLE(buffer.subarray(1, 1 + 8));
+        return toBigIntLE(buffer.readBuffer(8));
     } else {
         return BigInt(i);
     }

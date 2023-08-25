@@ -1,9 +1,8 @@
-const {OP_CODE_NAMES} = require("./op");
-const {readVarint, encodeVarint} = require("./helper");
-const {encode} = require("bs58check");
+const {OP_CODE_NAMES, Opcode} = require("./op");
+const {readVarint, encodeVarint, toBufferLE} = require("./helper");
 const SmartBuffer = require("smart-buffer").SmartBuffer;
 
-class Script{
+class Script {
     constructor(cmds = []) {
         this.cmds = cmds;
     }
@@ -31,12 +30,27 @@ class Script{
     }
 
     /**
-     * @param {Buffer} s
+     * @param {SmartBuffer} s
      */
     static parse(s) {
         const length = readVarint(s);
         const cmds = [];
         let count = 0;
+        while (count < length) {
+            const current = s.readUInt8();
+            count++;
+            if (current >= 1 && current <= 75) {
+                cmds.push(buffer.read)
+            } else if (current === 76) {
+
+            } else if (current === 77) {
+
+            } else {
+
+            }
+        }
+
+
         while (count < length) {
             const current = s.readUInt8();
             count++;
@@ -62,20 +76,18 @@ class Script{
     rawSerialize() {
         const s = new SmartBuffer();
         for (const cmd of this.cmds) {
-            if (typeof cmd === "number") {
+            if (typeof cmd === 'number') {
                 s.writeUInt8(cmd);
             } else {
                 const pushOpcode = cmd.opcode;
                 if (pushOpcode <= Opcode.OP_PUSHBYTES_75) {
                     s.writeBuffer(Buffer.concat([Buffer.alloc(1, pushOpcode), cmd.data]));
                 } else if (pushOpcode === Opcode.OP_PUSHDATA1) {
-                    s.writeBuffer(
-                        Buffer.concat([
-                            Buffer.alloc(1, pushOpcode),
-                            Buffer.alloc(1, cmd.originalLength),
-                            cmd.data
-                        ])
-                    );
+                    s.writeBuffer(Buffer.concat([
+                        Buffer.alloc(1, pushOpcode),
+                        Buffer.alloc(1, cmd.originalLength),
+                        cmd.data
+                    ]));
                 } else if (pushOpcode === Opcode.OP_PUSHDATA2) {
                     s.writeBuffer(
                         Buffer.concat([
@@ -87,7 +99,6 @@ class Script{
                 }
             }
         }
-        return s.toBuffer();
     }
 
     serialize() {
