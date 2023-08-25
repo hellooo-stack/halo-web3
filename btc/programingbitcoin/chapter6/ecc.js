@@ -364,25 +364,25 @@ class S256Point extends FinitePoint {
 
     // parse S256Point from sec binary data
     // sec_bin is hex string
-    static parse(sec_bin) {
-        if (sec_bin.startsWith('0x')) {
-            sec_bin = sec_bin.substring(2);
-        }
-        const secBinBuffer = Buffer.from(sec_bin, 'hex');
-
+    /**
+     *
+     * @param {Buffer} secBin
+     * @returns {S256Point}
+     */
+    static parse(secBin) {
         // compressed
-        if (secBinBuffer[0] === 4) {
-            const xBuffer = secBinBuffer.subarray(1, 33);
+        if (secBin[0] === 4) {
+            const xBuffer = secBin.subarray(1, 33);
             const x = BigInt('0x' + xBuffer.toString('hex'));
 
-            const yBuffer = secBinBuffer.subarray(33);
+            const yBuffer = secBin.subarray(33);
             const y = BigInt('0x' + yBuffer.toString('hex'));
 
             return new S256Point(x, y);
         }
 
-        const isEven = secBinBuffer[0] === 2;
-        const xBuffer = secBinBuffer.subarray(1, 33);
+        const isEven = secBin[0] === 2;
+        const xBuffer = secBin.subarray(1, 33);
         const x = BigInt('0x' + xBuffer.toString('hex'));
         const xField = new S256Field(x);
         // right side of the equation y^2 = x^3 + 7

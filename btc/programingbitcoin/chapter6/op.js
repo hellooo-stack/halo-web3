@@ -222,7 +222,8 @@ function opCheckSig(stack, z) {
     try {
         point = S256Point.parse(secPubkey);
         sig = Signature.parse(derSignature);
-    } catch {
+    } catch (e) {
+        console.error(e);
         return false;
     }
     if (point.verify(z, sig)) {
