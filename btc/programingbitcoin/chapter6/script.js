@@ -37,40 +37,67 @@ class Script {
         const cmds = [];
         let count = 0;
         while (count < length) {
-            const current = s.readUInt8();
-            count++;
-            if (current >= 1 && current <= 75) {
-                cmds.push(buffer.read)
-            } else if (current === 76) {
-
-            } else if (current === 77) {
-
+            let current = s.readBuffer(1);
+            count += 1;
+            let currentByte = current[0];
+            if (currentByte >= 1 && currentByte <= 75) {
+                let n = currentByte;
+                if (n + count > length) {
+                    n = Number(length) - count;
+                }
+                const data = s.readBuffer(n);
+                cmds.push({ opcode: currentByte, data, originalLength: currentByte });
+                count += n;
+            } else if (currentByte === 76) {
+                if (count + 1 > length) {
+                    cmds.push(currentByte);
+                    break;
+                }
+                const parsedDataLength = s.readUInt8();
+                let dataLength = parsedDataLength;
+                if (dataLength + count + 1 > length) {
+                    dataLength = Number(length) - count - 1;
+                }
+                const data = s.readBuffer(dataLength);
+                cmds.push({
+                    opcode: currentByte,
+                    data,
+                    originalLength: parsedDataLength
+                });
+                count += dataLength + 1;
+            } else if (currentByte === 77) {
+                if (count + 2 > length) {
+                    if (count + 1 > length) {
+                        cmds.push(currentByte);
+                    } else {
+                        const nextByte = s.readUInt8();
+                        cmds.push(currentByte);
+                        cmds.push(nextByte);
+                        count += 1;
+                    }
+                    break;
+                }
+                const parsedDataLength = s.readUInt16LE();
+                let dataLength = parsedDataLength;
+                if (dataLength + count + 2 > length) {
+                    dataLength = Number(length) - count - 2;
+                }
+                const data = s.readBuffer(dataLength);
+                cmds.push({
+                    opcode: currentByte,
+                    data,
+                    originalLength: parsedDataLength
+                });
+                count += dataLength + 2;
             } else {
-
+                const opCode = currentByte;
+                cmds.push(opCode);
             }
         }
-
-
-        while (count < length) {
-            const current = s.readUInt8();
-            count++;
-            let cmd;
-            if (current >= 1 && current <= 75) {
-                cmd = s.readBuffer(current);
-                count += current;
-            } else if (current === 76) {
-                const next = s.readUInt8();
-                cmd = s.readBuffer(next);
-                count += next + 1;
-            } else if (current === 77) {
-                const next = s.readUInt16LE();
-                cmd = s.readBuffer(next);
-                count += next + 2;
-            } else {
-                cmd = current;
-            }
-            cmds.push(cmd);
+        if (count !== Number(length)) {
+            throw Error("parsing script failed");
         }
+        return new Script(cmds);
     }
 
     rawSerialize() {
@@ -99,6 +126,8 @@ class Script {
                 }
             }
         }
+
+        return s.toBuffer();
     }
 
     serialize() {
@@ -110,6 +139,6 @@ class Script {
     evaluate(z) {
 
     }
-
-
 }
+
+exports.Script = Script;

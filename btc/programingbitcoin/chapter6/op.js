@@ -234,7 +234,14 @@ function opCheckSig(stack, z) {
     return true;
 }
 
-exports.OP_CODE_FUNCTIONS = {
+function opHash160(stack) {
+    if (stack.length < 1) return false;
+    const element = stack.pop();
+    stack.push(hash160(element));
+    return true;
+}
+
+OP_CODE_FUNCTIONS = {
     0: op0,
     81: op1,
     82: op2,
@@ -268,7 +275,7 @@ exports.OP_CODE_FUNCTIONS = {
     // 174: opCheckMultisig
 }
 
-exports.OP_CODE_NAMES = {
+OP_CODE_NAMES = {
     0: "OP_0",
     76: "OP_PUSHDATA1",
     77: "OP_PUSHDATA2",
@@ -365,7 +372,7 @@ exports.OP_CODE_NAMES = {
     238: "OP_RETURN_238"
 }
 
-exports.Opcode = {
+Opcode = {
     "OP_0": 0,
     "OP_PUSHBYTES_1": 1,
     "OP_PUSHBYTES_20": 20,
@@ -477,5 +484,9 @@ exports.Opcode = {
 module.exports = {
     encodeNum,
     decodeNum,
-    opCheckSig
+    opCheckSig,
+    opHash160,
+    OP_CODE_FUNCTIONS,
+    OP_CODE_NAMES,
+    Opcode
 }
