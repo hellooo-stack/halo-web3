@@ -1,8 +1,7 @@
-const {reverseBuffer, hash256, encodeVarint} = require("./helper");
-const http = require("http");
-const {SmartBuffer} = require("smart-buffer");
-const {bigIntToBufferLE} = require("./numbers");
-import fetch from "node-fetch";
+const {reverseBuffer, hash256, encodeVarint, readVarint, toBufferLE, toBigIntLE} = require('./helper');
+const {SmartBuffer} = require('smart-buffer');
+const axios = require('axios');
+const {Script} = require("./script");
 
 /**
  * @author: Jeb.Wang
@@ -19,16 +18,15 @@ class TxFetcher {
         }
     }
 
-    // todo: fetch tx from blockstream.info
     static async fetch(txId, testnet = false, fresh = false) {
         if (fresh || TxFetcher.cache[txId] === undefined) {
             const url = `${TxFetcher.getUrl(testnet)}/tx/${txId}/hex`;
-            let response = await fetch(url);
+            let response = await axios.get(url);
             if (response.status !== 200) {
                 throw Error(`Error fetching tx: ${txId}`);
             }
-            const rawTx = await response.text();
-            let raw = Buffer.from(rawTx, "hex");
+            const rawTx = await response.data;
+            let raw = Buffer.from(rawTx, 'hex');
             let tx;
             if (raw[4] === 0) {
                 raw = Buffer.concat([raw.slice(0, 4), raw.slice(6)]);
@@ -66,11 +64,11 @@ class Tx {
     }
 
     toString() {
-        let txIns = "";
+        let txIns = '';
         for (const txIn of this.txIns) {
             txIns += `${txIn}\n`;
         }
-        let txOuts = "";
+        let txOuts = '';
         for (const txOut of this.txOuts) {
             txOuts += `${txOut}\n`;
         }
@@ -88,7 +86,19 @@ class Tx {
     }
 
     static parse(s, testnet = false) {
-
+        const version = s.readUInt32LE();
+        const numInputs = readVarint(s);
+        let inputs = [];
+        for (let i = 0; i < numInputs; i++) {
+            inputs.push(TxIn.parse(s));
+        }
+        const numOutputs = readVarint(s);
+        let outputs = [];
+        for (let i = 0; i < numOutputs; i++) {
+            outputs.push(TxOut.parse(s));
+        }
+        const locktime = s.readUInt32LE();
+        return new Tx(version, inputs, outputs, locktime, testnet);
     }
 
     serialize() {
@@ -106,8 +116,16 @@ class Tx {
         return s.toBuffer()
     }
 
-    fee() {
-
+    async fee(testnet) {
+        let inputSum = 0n;
+        let outputSum = 0n;
+        for (const txIn of this.txIns) {
+            inputSum += await txIn.value(testnet);
+        }
+        for (const txOut of this.txOuts) {
+            outputSum += txOut.amount;
+        }
+        return inputSum - outputSum;
     }
 }
 
@@ -116,7 +134,7 @@ class TxIn {
         this.prevTx = prevTx;
         this.prevIndex = prevIndex;
         if (scriptSig === null) {
-        //     todo
+            //     todo
         } else {
             this.scriptSig = scriptSig;
         }
@@ -127,9 +145,12 @@ class TxIn {
         return `${this.prevTx.hex()}:${this.prevIndex}`;
     }
 
-    // todo
     static parse(s) {
-
+        const prevTx = reverseBuffer(s.readBuffer(32));
+        const prevIndex = s.readUInt32LE();
+        const scriptSig = Script.parse(s);
+        const sequence = s.readUInt32LE();
+        return new TxIn(prevTx, prevIndex, scriptSig, sequence);
     }
 
     serialize() {
@@ -141,8 +162,13 @@ class TxIn {
         return s.toBuffer();
     }
 
-    fetchTx(testnet = false) {
-
+    async fetchTx(testnet = false) {
+        try {
+            return await TxFetcher.fetch(this.prevTx.toString('hex'), testnet);
+        } catch {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return this.fetchTx(testnet);
+        }
     }
 
     value(testnet = false) {
@@ -166,17 +192,17 @@ class TxOut {
         return `${this.amount}:${this.scriptPubKey}`;
     }
 
-    // todo
     static parse(s) {
-
+        const amount = toBigIntLE(s.readBuffer(8));
+        const scriptPubkey = Script.parse(s);
+        return new TxOut(amount, scriptPubkey);
     }
 
     serialize() {
-        const amount = bigIntToBufferLE(this.amount, 8);
+        const amount = toBufferLE(this.amount, 8);
         const scriptPubKey = this.scriptPubKey.serialize();
         return Buffer.concat([amount, scriptPubKey]);
     }
 }
 
-
-
+exports.TxFetcher = TxFetcher;
