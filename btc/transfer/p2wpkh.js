@@ -6,7 +6,6 @@ const ECPair = ECPairFactory(ecc);
 
 const network = bitcoin.networks.testnet;
 const keyPair = ECPair.fromWIF('cNHwZuLZVo531CMarT4tGUcWAfZxh19AZJRr8ZvcNTMDWaCWArLQ', network);
-const payment = bitcoin.payments.p2wpkh({pubkey: keyPair.publicKey, network: network});
 
 const oriAddr = 'tb1qznq0ysk7naka8ztjs0pyx0gwhj907j8shyhtal';
 const destAddr = 'tb1qj2yrg95zt4sjqgtj9tu44d64xqe4m79rm89ne3';

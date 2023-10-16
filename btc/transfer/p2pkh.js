@@ -1,7 +1,6 @@
 const {ECPairFactory} = require("ecpair");
 const ecc = require('tiny-secp256k1');
 const bitcoin = require("bitcoinjs-lib");
-const net = require("net");
 
 const ECPair = ECPairFactory(ecc);
 
