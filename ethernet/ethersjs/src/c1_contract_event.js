@@ -54,7 +54,7 @@ async function listenEvents() {
     ];
 
     const contract = new Contract(eventmakerContractAddress, abi, provider);
-    contract.on('Transfer', (from, to, _amount, event) => {
+    await contract.on('Transfer', (from, to, _amount, event) => {
 
         const amount = ethers.formatEther(_amount, 18);
         console.log(`${from} => ${to}: ${amount}`);
@@ -67,7 +67,7 @@ async function listenEvents() {
     });
 
     const filter = contract.filters.Transfer('0xCA3875f76FeeE8dDF0908c11b621e89dfaC850AE', null, null);
-    contract.on(filter, (from, to, _amount, event) => {
+    await contract.on(filter, (from, to, _amount, event) => {
 
         const amount = ethers.formatEther(_amount, 18);
         console.log(`from 0xCA3875f76FeeE8dDF0908c11b621e89dfaC850AE to ${to}: ${amount}`);
@@ -76,7 +76,7 @@ async function listenEvents() {
     });
 
 
-    contract.on('Failed', (from, to, event) => {
+    await contract.on('Failed', (from, to, event) => {
 
         console.log(`${from} => ${to} failed`);
 
