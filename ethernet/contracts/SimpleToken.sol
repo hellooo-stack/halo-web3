@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.1;
 
-// This is a smart contract - a program that can be deployed to the Ethereum blockchain.
+// This is a smart contracts - a program that can be deployed to the Ethereum blockchain.
 contract SimpleToken {
     // An `address.sol` is comparable to an email address.sol - it's used to identify an account on Ethereum.
     address public owner;
@@ -12,8 +12,8 @@ contract SimpleToken {
     mapping (address => uint) public balances;
 
 
-    // When 'SimpleToken' contract is deployed:
-    // 1. set the deploying address.sol as the owner of the contract
+    // When 'SimpleToken' contracts is deployed:
+    // 1. set the deploying address.sol as the owner of the contracts
     // 2. set the token balance of the owner to the total token supply
     constructor() {
         owner = msg.sender;

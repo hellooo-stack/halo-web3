@@ -1,19 +1,15 @@
 {
-  "name": "contract-dev",
+  "name": "handy_scripts",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "burn_wtoken.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
-    "hardhat": "^2.16.1"
-  },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.2"
+    "ethers": "^6.8.0"
   }
 }

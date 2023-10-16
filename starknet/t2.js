@@ -10,18 +10,18 @@ const {Provider,RpcProvider, ec, Account, Contract} = require('starknet');
     const starkKeyPair0 = ec.getKeyPair(privateKey0);
     const account0 = new Account(provider, account0Address, starkKeyPair0);
 
-// Connect the deployed Test contract in Tesnet
+// Connect the deployed Test contracts in Tesnet
     const testAddress = "0x5f7cd1fd465baff2ba9d2d1501ad0a2eb5337d9a885be319366b5205a414fdd";
 
-// read abi of Test contract
+// read abi of Test contracts
     const { abi: testAbi } = await provider.getClassAt(testAddress);
     if (testAbi === undefined) { throw new Error("no abi.") };
     const myTestContract = new Contract(testAbi, testAddress, provider);
 
-// Connect account with the contract
+// Connect account with the contracts
     myTestContract.connect(account0);
 
-// Interactions with the contract with call & invoke
+// Interactions with the contracts with call & invoke
     const bal1 = await myTestContract.get_balance();
     console.log("Initial balance =", bal1.res.toString());
 

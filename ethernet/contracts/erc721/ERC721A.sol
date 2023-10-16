@@ -104,7 +104,7 @@ IERC721Enumerable
 
     /**
      * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
-   * This read function is O(collectionSize). If calling from a separate contract, be sure to test gas first.
+   * This read function is O(collectionSize). If calling from a separate contracts, be sure to test gas first.
    * It may also degrade with extremely large collection sizes (e.g >> 10000), test for your use case.
    */
     function tokenOfOwnerByIndex(address owner, uint256 index)
@@ -484,7 +484,7 @@ IERC721Enumerable
 
     /**
      * @dev Internal function to invoke {IERC721Receiver-onERC721Received} on a target address.
-   * The call is not executed if the target address is not a contract.
+   * The call is not executed if the target address is not a contracts.
    *
    * @param from address representing the previous owner of the given token ID
    * @param to target address that will receive the tokens

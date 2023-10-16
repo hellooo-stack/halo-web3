@@ -33,7 +33,7 @@ async function writeContract() {
     ];
 
     const contract = new Contract(wtokenContractAddress, abi, signer);
-    // let tx = await contract.grantRole('todo', 'todo');
+    // let tx = await contracts.grantRole('todo', 'todo');
     // let receipt = await tx.wait();
     // console.log('receipt: ', receipt);
 
