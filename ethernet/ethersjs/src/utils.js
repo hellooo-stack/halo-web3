@@ -19,7 +19,7 @@ function address(c) {
 }
 
 // console.log(address('4'));
-console.log(privateKeyToAddress('0xac0974bebb9a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'));
+console.log(privateKeyToAddress('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'));
 
 // 钱比较多的：
 // 0x0000000000000000000000000000000000000000000000000000000000000001
